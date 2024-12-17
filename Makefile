@@ -1,28 +1,30 @@
 
 NAME = libgruyere
 
-BUILDDIR = build
-SRCDIR = src
+BUILDDIR := build
+SRCDIR := src
+SOURCEFILES := $(shell ls $(SRCDIR)/*/*.cpp)
+OBJECTFILES := $(shell ls $(SRCDIR)/*/*.cpp | sed 's/\.cpp/\.o/g' | sed 's/src/$(BUILDDIR)\/objects/g')
 
+test:
+	@printf "$(SOURCEFILES)\n$(OBJECTFILES)\n"
 
-all:
+all: static shared
 	@printf "Building static and shared libraries\n"
-	make static
-	make shared
 
 clean:
 	@printf "Deleting the build directory\n"
 	rm -rf $(BUILDDIR)
 
-static: Bigint.o
+static: $(OBJECTFILES)
 	mkdir -p $(BUILDDIR)/objects
 	ar rcs $(NAME).a $^
 
-shared: Bigint.o
+shared: $(OBJECTFILES)
 	mkdir -p $(BUILDDIR)/objects
 	g++ -fPIC -shared $(BUILDDIR)/objects/* -o $(BUILDDIR)/$(NAME).so
 
-
-Bigint.o: $(SRCDIR)/Bigint.cpp
+# compile the object
+$(OBJECTFILES): $(SOURCEFILES)
 	@printf "Compiling $@\n"
-	g++ -c $< -o $(BUILDDIR)/$@
+	g++ -c $(shell echo "$@" | sed 's/\.o/\.cpp/g' | sed 's/build\/objects/src/g') -o $@

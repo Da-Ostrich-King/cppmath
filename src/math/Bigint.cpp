@@ -1,4 +1,4 @@
-#include "../include/Bigint.hpp"
+#include "../../include/math/Bigint.hpp"
 
 
 template< int size > gruyere::math::Bigint< size >::Bigint() {
