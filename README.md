@@ -10,3 +10,4 @@
 
 # Why is it called gruyere?
 My cats name is gruyere, it has nothing to do with cheese
+![An image of my cat Gruyere](Gruyere.jpg)
