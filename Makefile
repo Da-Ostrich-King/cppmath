@@ -30,4 +30,5 @@ shared: $(OBJECTFILES)
 # compile the object
 $(OBJECTFILES): $(SOURCEFILES)
 	@printf "Compiling $@\n"
+	mkdir -p $(shell dirname "$@")
 	g++ -c $(shell echo "$@" | sed 's/\.o/\.cpp/g' | sed 's/build\/objects/src/g') -o $@ $(FLAGS)
