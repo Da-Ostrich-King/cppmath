@@ -72,17 +72,17 @@ Variables should be declared on their own line, and if applicable initialized on
 int fooBar;
 // class names should be PascalCase, and ideally one word
 class Exception {}
-// constants should be SCREAMING_SNAKE_CASE with some [notable exceptions](#symbol-names-exceptions)
+```
+Constants should be SCREAMING_SNAKE_CASE with some [notable exceptions](#symbol-names-exceptions)
+```
 const float PI = 3.14159;
 ```
 Pointers
 ```
 // pointers go with the type
 int* integerPointer;
-```
 // pointers should be written to be read right to left, which makes and easy rule to remember when trying to understand complex pointer types
-```
-char const **pRealCommandUnsafe = new char const *[ 4 ];
+char const** pRealCommandUnsafe = new char const *[ 4 ];
 ```
 
 
