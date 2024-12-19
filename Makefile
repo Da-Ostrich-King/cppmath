@@ -6,6 +6,9 @@ SRCDIR := src
 SOURCEFILES := $(shell ls $(SRCDIR)/*/*.cpp)
 OBJECTFILES := $(shell ls $(SRCDIR)/*/*.cpp | sed 's/\.cpp/\.o/g' | sed 's/src/$(BUILDDIR)\/objects/g')
 
+FLAGS = --std=c++20
+LINKFLAGS = 
+
 test:
 	@printf "$(SOURCEFILES)\n$(OBJECTFILES)\n"
 
@@ -27,4 +30,4 @@ shared: $(OBJECTFILES)
 # compile the object
 $(OBJECTFILES): $(SOURCEFILES)
 	@printf "Compiling $@\n"
-	g++ -c $(shell echo "$@" | sed 's/\.o/\.cpp/g' | sed 's/build\/objects/src/g') -o $@
+	g++ -c $(shell echo "$@" | sed 's/\.o/\.cpp/g' | sed 's/build\/objects/src/g') -o $@ $(FLAGS)
