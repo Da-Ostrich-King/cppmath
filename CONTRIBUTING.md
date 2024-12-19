@@ -92,7 +92,7 @@ char const** pRealCommandUnsafe = new char const *[ 4 ];
 
 Symbol names for the most part will follow the rules I have outlined above. But there are exceptions.
 - When writing well know mathematical constants like e, they should be written like this `const float e = 2.71828;`
-- When writing const char * that are disposable, for example `const char* filePath = "path/to/file";`
+- When writing constants that are disposable, for example `const char* filePath = "path/to/file";` (although it really should be std::filesystem::path("path/to/file") and then acquire the c_string when needed)
 - But not exempting universal constants like
 ```
 const char* HELP_TEXT = 
