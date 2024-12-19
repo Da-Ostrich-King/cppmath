@@ -25,16 +25,14 @@ void command_options::register_flag( std::string single, std::string expanded ) 
                 _flags.push_back( std::pair< std::string, std::string >( single, expanded ) );
             } else {
                 throw core::Exception( "Redundant Flag", std::format( 
-                "Redundant flag {} was registered."
-                     " Exists in option[{}]",
-                      expanded, i ) );
+                    "Redundant flag {} was registered. Exists in option[{}]",
+                    expanded, i ) );
             }
             
         } else {
             throw core::Exception( "Redundant Flag", std::format( 
-                "Redundant flag {} was registered."
-                     " Exists in option[{}]",
-                      single, i ) );
+                "Redundant flag {} was registered. Exists in option[{}]",
+                single, i ) );
         }
     }
 }
