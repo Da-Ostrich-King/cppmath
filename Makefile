@@ -1,10 +1,19 @@
 
 NAME = libgruyere
 
+VERMAJ = 0
+VERMIN = 0
+VERREV = 1
+
+FULLVER = $(VERMAJ).$(VERMIN).$(VERREV)
+
 BUILDDIR := build
 SRCDIR := src
 SOURCEFILES := $(shell ls $(SRCDIR)/*/*.cpp)
 OBJECTFILES := $(shell ls $(SRCDIR)/*/*.cpp | sed 's/\.cpp/\.o/g' | sed 's/src/$(BUILDDIR)\/objects/g')
+
+PREFIX = usr/local
+DESTDIR = /
 
 FLAGS = -fPIC --std=c++20 -g
 LINKFLAGS = 
@@ -18,6 +27,25 @@ test:
 	@make all --dry-run
 
 all: static shared
+
+.PHONY: install
+install: static shared
+	install -d $(DESTDIR)$(PREFIX)/lib
+	install -m 0755 $(BUILDDIR)/$(NAME).a $(DESTDIR)$(PREFIX)/lib/$(NAME).a
+
+	install -m 0755 $(BUILDDIR)/$(NAME).so $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER)
+	ln -s $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER) $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(VERMAJ)
+	ln -s $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER) $(DESTDIR)$(PREFIX)/lib/$(NAME).so
+
+	(cd include && find . -type f -exec install -Dm 755 "{}" "/usr/local/include/gruyere/{}" \;)
+
+.PHONY: uninstall
+uninstall:
+	rm $(shell find $(DESTDIR)$(PREFIX)/lib/ | grep "$(NAME).so")
+	rm $(DESTDIR)$(PREFIX)/lib/$(NAME).a
+
+	rm -r $(DESTDIR)$(PREFIX)/include/gruyere/
+
 
 clean:
 	@printf "Deleting the build directory\n"

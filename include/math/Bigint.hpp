@@ -1,7 +1,13 @@
+#pragma once
+
 #include <cstdint>
 #include <ostream>
 #include <vector>
 #include <iostream>
+
+#include "../defines.hpp"
+
+
 namespace gruyere {
     namespace math {
         template< int precision >
