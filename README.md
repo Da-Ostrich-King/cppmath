@@ -1,7 +1,7 @@
 # Gruyere++
 A C++ library for adding features not present in the normal STL, or that I decided would be fun to write even if they are redundant, I decided to write this as a utility library for my own use, don't expect continued support
 
-# Lincense
+# License
 The license file is located /LICENCE where / is the top level of the git repository
 This is a library that adds features to the c++ STL that I think would be useful called "Gruyere++"
 
@@ -20,6 +20,13 @@ Copyright (C) 2024 Copyright belongs to whomever can prove they are the lawfull 
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Build && Install
+To build run `make all` <br>
+To install run `make install` as root <br>
+To override the soversion, run `make install "VERMAJ=123" "VERMIN=456" "VERREV=789"` *not recommended, better to actually install that version*<br>
+To override the install path append `"PREFIX=path/to/install/folder"` and `"DESTDIR=/path/to/root/dir/"`, DESTDIR must begin and end with "/" and PREFIX musn't begin or end with "/"
+
 
 # Errors
 Fatal runtime errors are reported as they are normally, as exceptions. And I have a custom exception class, `gruyere::util::core::Exception`, which is simple. However the constructor takes 2 arguments rather than one, the first is the type of error (what is reported when calling `gruyere::util::core::Exception::what` or equivilent), but also a message, which can be found with `gruyere::util::core::Exception::why`

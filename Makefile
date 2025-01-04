@@ -7,6 +7,8 @@ VERREV = 1
 
 FULLVER = $(VERMAJ).$(VERMIN).$(VERREV)
 
+SHELL := /bin/bash
+
 BUILDDIR := build
 SRCDIR := src
 SOURCEFILES := $(shell ls $(SRCDIR)/*/*.cpp)
@@ -18,38 +20,45 @@ DESTDIR = /
 FLAGS = -fPIC --std=c++20 -g
 LINKFLAGS = 
 
-test:
-	@printf "The following is debug information for debugging build errors\n"
-	@printf "To build the library, consult the README or just wing it\n\n"
-	@printf "Found source files: \n`echo $(SOURCEFILES) | sed 's/ /\n/g'`\n\n"
-	@printf "Found object files: \n`echo $(OBJECTFILES) | sed 's/ /\n/g'`\n\n"
-	@printf "Commands that will be run during compilation in its current state\nRunning the dry-run\n\n"
-	@make all --dry-run
+test: all
+	(cd test && find . -type d -exec make -C {} \;)
 
 all: static shared
 
 .PHONY: install
-install: static shared
+install: $(BUILDDIR)/$(NAME).so $(BUILDDIR)/$(NAME).a
+
+	test -f "$(BUILDDIR)/install_manifest.txt" && rm "$(BUILDDIR)/install_manifest.txt" || true
+
 	install -d $(DESTDIR)$(PREFIX)/lib
 	install -m 0755 $(BUILDDIR)/$(NAME).a $(DESTDIR)$(PREFIX)/lib/$(NAME).a
+	@echo $(DESTDIR)$(PREFIX)/lib/$(NAME).a >> $(BUILDDIR)/install_manifest.txt
 
 	install -m 0755 $(BUILDDIR)/$(NAME).so $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER)
-	ln -s $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER) $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(VERMAJ)
-	ln -s $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER) $(DESTDIR)$(PREFIX)/lib/$(NAME).so
+	@echo $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER) >> $(BUILDDIR)/install_manifest.txt
+	
+	ln -sf $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER) $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(VERMAJ)
+	@echo $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(VERMAJ) >> $(BUILDDIR)/install_manifest.txt
+
+	ln -sf $(DESTDIR)$(PREFIX)/lib/$(NAME).so.$(FULLVER) $(DESTDIR)$(PREFIX)/lib/$(NAME).so
+	@echo $(DESTDIR)$(PREFIX)/lib/$(NAME).so >> $(BUILDDIR)/install_manifest.txt
 
 	(cd include && find . -type f -exec install -Dm 755 "{}" "/usr/local/include/gruyere/{}" \;)
 
+
+
 .PHONY: uninstall
 uninstall:
-	rm $(shell find $(DESTDIR)$(PREFIX)/lib/ | grep "$(NAME).so")
-	rm $(DESTDIR)$(PREFIX)/lib/$(NAME).a
-
-	rm -r $(DESTDIR)$(PREFIX)/include/gruyere/
+	cat build/install_manifest.txt | xargs echo rm | /usr/bin/sh
+	rm -r $(DESTDIR)$(PREFIX)/include/gruyere
 
 
+.PHONY: clean
 clean:
 	@printf "Deleting the build directory\n"
 	rm -rf $(BUILDDIR)
+
+	rm $(shell find test -type f | grep a.out)
 
 static: $(OBJECTFILES)
 	@printf "Linking static library\n"
@@ -64,8 +73,9 @@ shared: $(OBJECTFILES)
 objects: $(OBJECTFILES)
 
 # compile the object
+# long shell command converts object file path to source file path, $@ is the object file
 $(OBJECTFILES): $(SOURCEFILES)
 	@printf "Compiling $@\n"
 	mkdir -p $(shell dirname "$@")
-	g++ -c $(shell echo "$@" | sed 's/\.o/\.cpp/g' | sed 's/build\/objects/src/g') -o $@ $(FLAGS)
+	test $@ -nt $(shell echo "$@" | sed 's/\.o/\.cpp/g' | sed 's/build\/objects/src/g') || g++ -c $(shell echo "$@" | sed 's/\.o/\.cpp/g' | sed 's/build\/objects/src/g') -o $@ $(FLAGS)
 	@printf "Compiled $@\n\n"
